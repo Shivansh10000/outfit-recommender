@@ -33,6 +33,26 @@ def get_recent_trends(url):
     return trends
 
 
+def get_recent_trends2(url):
+    response = requests.get(url)
+    html_content = response.content
+
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(html_content, "html.parser")
+
+    # Find the container element
+    container = soup.find("div", class_="CarouselListWrapper-jhefUk iWgJZu")
+
+    # Find all h3 elements within the container
+    h3_elements = container.find_all(
+        "h3", class_="SummaryItemHedBase-hiFYpQ gcQpFI summary-item__hed")
+
+    # Extract the plain text from the h3 elements and store in a list
+    trends = [h3_element.get_text(strip=True) for h3_element in h3_elements]
+
+    return trends
+
+
 # 1. Vectorise the sales response csv data
 loader = CSVLoader(file_path="testing.csv")
 documents = loader.load()
@@ -104,8 +124,11 @@ def generate_response(message, trends_string):
 # 5. Build an app with streamlit
 def main():
 
-    trends_url = "https://fashionmagazine.com/category/style/trends/"
-    recent_trends = get_recent_trends(trends_url)
+    trends_url1 = "https://fashionmagazine.com/category/style/trends/"
+    trends_url2 = "https://www.vogue.com/fashion/trends"
+    recent_trends = get_recent_trends(trends_url1)
+    recent_trends2 = get_recent_trends2(trends_url2)
+    recent_trends += recent_trends2
     trends_string = "\n".join(recent_trends)
 
     st.set_page_config(
