@@ -6,8 +6,32 @@ from langchain.prompts import PromptTemplate
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import LLMChain
 from dotenv import load_dotenv
+import requests
+from bs4 import BeautifulSoup
 
 load_dotenv()
+
+# Define a function to fetch recent trends from the specified URL
+
+
+def get_recent_trends(url):
+    trends = []
+
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.content, 'html.parser')
+            # Find all trend title elements within the specified container
+            trend_elements = soup.select('section.post-feed a[aria-label]')
+            for trend_element in trend_elements:
+                trend_text = trend_element['aria-label']
+                trends.append(trend_text)
+    except requests.exceptions.RequestException as e:
+        print("An error occurred while fetching the page:", e)
+
+    return trends
+
 
 # 1. Vectorise the sales response csv data
 loader = CSVLoader(file_path="testing.csv")
@@ -20,7 +44,7 @@ db = FAISS.from_documents(documents, embeddings)
 
 
 def retrieve_info(query):
-    similar_response = db.similarity_search(query, k=3)
+    similar_response = db.similarity_search(query, k=10)
 
     page_contents_array = [doc.page_content for doc in similar_response]
 
@@ -47,7 +71,7 @@ and you will follow ALL of the rules below:
 
 4/ Each of the products also has an image link make sure to also write that below everything as well as image link
 
-5/ Make it so that the results can be formatted through the categories for title, description, link, image, brand, cost, in stock or out of stock
+5/ Make it so that the results can be formatted through the categories for title, description, link, image, brand, cost, in stock or out of stock and each of these should be in a different line
 
 Below is a message you need to understand and find best answers for
 {message}
@@ -56,13 +80,13 @@ Here is a list of products you will use for this purpose
 {best_practice}
 
 these are the current trends make sure to consider these if the request is open ended
-lime color, Split-Hem Leggings, sling bags, denim, stripe, pendants
+{trends_string}
 
 Please write the best response that I should send to this prospect:
 """
 
 prompt = PromptTemplate(
-    input_variables=["message", "best_practice"],
+    input_variables=["message", "best_practice", "trends_string"],
     template=template
 )
 
@@ -70,14 +94,20 @@ chain = LLMChain(llm=llm, prompt=prompt)
 
 
 # 4. Retrieval augmented generation
-def generate_response(message):
+def generate_response(message, trends_string):
     best_practice = retrieve_info(message)
-    response = chain.run(message=message, best_practice=best_practice)
+    response = chain.run(
+        message=message, best_practice=best_practice, trends_string=trends_string)
     return response
 
 
 # 5. Build an app with streamlit
 def main():
+
+    trends_url = "https://fashionmagazine.com/category/style/trends/"
+    recent_trends = get_recent_trends(trends_url)
+    trends_string = "\n".join(recent_trends)
+
     st.set_page_config(
         page_title="Cloth Recommendor", page_icon=":bird:")
 
@@ -87,9 +117,13 @@ def main():
     if message:
         st.write("Generating most similar products to the search...")
 
-        result = generate_response(message)
+        result = generate_response(message, trends_string)
 
         st.info(result)
+
+    # Fetch recent trends from the specified URL
+    st.write("Recent Fashion Trends:")
+    st.write(trends_string)
 
 
 if __name__ == '__main__':
