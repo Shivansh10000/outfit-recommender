@@ -85,8 +85,8 @@ def main_page(session):
     cart_titles = [item['title'] for item in session.cart_items]
     cart_info = ",".join(cart_titles)
     current_trends = session.trends_string
-    user_info += cart_info
-    user_info += current_trends
+    user_info += " Cart Info : " + cart_info
+    user_info += " Current Trends : " + current_trends
 
     # Initialize the session state variable if not present
     if "main_page_enter_pressed" not in session:
@@ -121,7 +121,9 @@ def main_page(session):
             1/ Response should be from the available products
             2/ Say i found these products and write about them in natural language i.e. the best matching products from the data i have given
             3/ Display each of the products one by one display the information for each product in the following order:
+            4/ Each of the products also has an image link make sure to also write that as well as image link
             First Display the Image then show product Title,price,link to buy,company,color,material and then the reason why this product was recommended for this user based on the user's personal info and recent trends make sure to display these in different lines then finally show all other product links and titles required to complete an outfit that has this product in it
+            Show all the details in seperate lines of course each products image should be the first to show
             
             Below is a message you need to understand and find best answers for
             {message}
@@ -131,7 +133,7 @@ def main_page(session):
     
             Show products according to the user's personal data and trends
             {user_info}
-            
+            Show the products according to the gender you identified from the user info you have, if the gender is male show outfits made for male only and if its female show outfits for female only unless user has clearly stated in the prompt otherwise.
             Please write the best response using all the above information:
             """
 
