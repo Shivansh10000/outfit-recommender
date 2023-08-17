@@ -120,9 +120,8 @@ def main_page(session):
             
             1/ Response should be from the available products
             2/ Say i found these products and write about them in natural language i.e. the best matching products from the data i have given
-            3/ Each of the products in the list has a link make sure to include that in the bottom of you recommendation so that the viewer can click on i
-            4/ Each of the products also has an image link make sure to also write that below everything as well as image link
-            5/ Make it so that the results can be formatted through the categories for title, description, link, image, brand, cost, in stock or out of stock and each of these should be in a different line
+            3/ Display each of the products one by one display the information for each product in the following order:
+            First Display the Image then show product Title,price,link to buy,company,color,material and then the reason why this product was recommended for this user based on the user's personal info and recent trends make sure to display these in different lines then finally show all other product links and titles required to complete an outfit that has this product in it
             
             Below is a message you need to understand and find best answers for
             {message}
@@ -133,7 +132,7 @@ def main_page(session):
             Show products according to the user's personal data and trends
             {user_info}
             
-            Please write the best response that I should send to this prospect:
+            Please write the best response using all the above information:
             """
 
             prompt = PromptTemplate(
