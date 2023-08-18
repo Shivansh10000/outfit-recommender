@@ -246,7 +246,43 @@ def main():
     initialize_session()
 
     st.set_page_config(
-        page_title="Cloth Recommender", page_icon=":bird:")
+        page_title="Cloth Recommender",
+        page_icon=":shirt:",  # Replace with a relevant icon
+        layout="wide",  # Set layout to wide
+        initial_sidebar_state="expanded",  # Expand sidebar by default
+    )
+
+    # Custom CSS for styling
+    st.markdown("""
+    <style>
+    body {
+        background-color: #f5f5f5; /* Light gray background color for the entire app */
+        font-family: 'Helvetica Neue', sans-serif;
+    }
+
+    .sidebar .sidebar-content {
+        background-color: #ffffff; /* White background color for the sidebar */
+        border-right: 1px solid #e0e0e0;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    .stButton button {
+        background-color: #007bff; /* Blue button color */
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .stButton button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+
+    /* Add more custom styles here */
+    </style>
+    """, unsafe_allow_html=True)
 
     nav_selection = st.sidebar.radio(
         "Navigation", ["Home Page", "Profile Page", "Product Page", "My Information"])
@@ -266,6 +302,8 @@ def main():
         product_page()
     elif nav_selection == "My Information":
         my_information_page()
+
+    # Rest of your code...
 
 
 if __name__ == '__main__':
