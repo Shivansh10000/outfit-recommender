@@ -61,7 +61,13 @@ def my_information_page():
     st.header("User Information")
 
     if st.session_state.user_data_string:
-        st.write(st.session_state.user_data_string)
+        # st.write(st.session_state.user_data_string)
+        user_data_string2 = st.session_state.user_data_string
+        # Splitting the user data string into individual data points
+        user_data_list = user_data_string2.split(",")
+        for data_point in user_data_list:
+            st.write(f"- {data_point.strip()}")
+
     else:
         st.write("User information not available.")
 
@@ -109,8 +115,9 @@ def main_page(session):
         llm = ChatOpenAI(temperature=0, model="gpt-3.5-turbo-16k-0613")
 
         def generate_response(message, user_info):
-            best_practice = retrieve_info(message)
-            best_practice_text = "\n".join(best_practice)  # List of strings
+            similar_products = retrieve_info(message)
+            similar_products_text = "\n".join(
+                similar_products)  # List of strings
             # Convert to a single string
 
             template = """
@@ -129,7 +136,7 @@ def main_page(session):
             {message}
             
             Here is a list of products you will use for this purpose
-            {best_practice_text}
+            {similar_products_text}
     
             Show products according to the user's personal data and trends
             {user_info}
@@ -138,14 +145,15 @@ def main_page(session):
             """
 
             prompt = PromptTemplate(
-                input_variables=["message", "best_practice_text", "user_info"],
+                input_variables=["message",
+                                 "similar_products_text", "user_info"],
                 template=template
             )
 
             chain = LLMChain(llm=llm, prompt=prompt)
 
             response = chain.run(
-                message=message, best_practice_text=best_practice_text, user_info=user_info)
+                message=message, similar_products_text=similar_products_text, user_info=user_info)
             return response
 
         st.write("Generating most similar products to the search...")
@@ -159,11 +167,28 @@ def main_page(session):
     if session.main_page_enter_pressed:
         session.main_page_enter_pressed = False
 
-    st.write("Recent Fashion Trends:")
-    st.write(str(session.trends_string))
+    # st.write("Recent Fashion Trends:")
+    # st.write(str(session.trends_string))
+
+    # Example trends string
+    trends_string = str(session.trends_string)
+
+    # Splitting the trends string into individual trends
+    trends_list = trends_string.split("Category: Trends")
+
+    # Remove any empty strings from the list
+    trends_list = [t.strip() for t in trends_list if t.strip()]
+
+    # Header
+    st.title("Fashion Trends")
+
+    # Display trends as a bullet-pointed list
+    st.markdown("### Recent Fashion Trends:")
+    for trend in trends_list:
+        st.write(f"- {trend}")
 
     # Display user information
-    st.write(f"User Information: {user_info}")
+    # st.write(f"User Information: {user_info}")
 
 
 def profile_page():
@@ -302,8 +327,6 @@ def main():
         product_page()
     elif nav_selection == "My Information":
         my_information_page()
-
-    # Rest of your code...
 
 
 if __name__ == '__main__':
