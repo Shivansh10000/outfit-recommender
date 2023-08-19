@@ -58,7 +58,7 @@ def get_recent_trends2(url):
 
 def my_information_page():
     st.title("My Information")
-    st.header("User Information")
+    st.header("User Information :computer:")
 
     if st.session_state.user_data_string:
         # st.write(st.session_state.user_data_string)
@@ -71,7 +71,7 @@ def my_information_page():
     else:
         st.write("User information not available.")
 
-    st.header("Cart Items")
+    st.header("Cart Items :shopping_trolley:")
 
     if hasattr(st.session_state, "cart_items") and len(st.session_state.cart_items) > 0:
         for item in st.session_state.cart_items:
@@ -84,8 +84,8 @@ def my_information_page():
 
 
 def main_page(session):
-    st.title("Home Page")
-    st.header("Clothes Recommendation Generator :bird:")
+    st.title("AI Search :gear:")
+    st.header("Clothes Recommendation Generator :sparkles:")
 
     user_info = session.user_data_string
     cart_titles = [item['title'] for item in session.cart_items]
@@ -180,7 +180,7 @@ def main_page(session):
     trends_list = [t.strip() for t in trends_list if t.strip()]
 
     # Header
-    st.title("Fashion Trends")
+    st.title("Fashion Trends :chart_with_upwards_trend:")
 
     # Display trends as a bullet-pointed list
     st.markdown("### Recent Fashion Trends:")
@@ -192,7 +192,7 @@ def main_page(session):
 
 
 def profile_page():
-    st.title("Profile Page")
+    st.title("Profile Page :keyboard:")
     st.write("Please provide your information:")
 
     if "user_data" not in st.session_state:
@@ -213,7 +213,7 @@ def profile_page():
 
 
 def product_page():
-    st.title("Product Page")
+    st.title("Product Page :department_store:")
     st.write("Explore our latest products here!")
 
     # Display each row of the CSV data
@@ -310,7 +310,7 @@ def main():
     """, unsafe_allow_html=True)
 
     nav_selection = st.sidebar.radio(
-        "Navigation", ["Home Page", "Profile Page", "Product Page", "My Information"])
+        "Navigation", ["Home Page", "AI search", "Product Page", "My Information"])
 
     # Initialize session state variables if not present
     if "main_page_enter_pressed" not in st.session_state:
@@ -320,7 +320,7 @@ def main():
 
     if nav_selection == "Home Page":
         profile_page()
-    elif nav_selection == "Profile Page":
+    elif nav_selection == "AI search":
         st.session_state.main_page_enter_pressed = True
         main_page(st.session_state)
     elif nav_selection == "Product Page":
